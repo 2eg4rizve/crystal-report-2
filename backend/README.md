@@ -103,9 +103,9 @@ Invoice prices always come from `Products`; client prices are ignored. `InvoiceS
 
 `InvoiceService.GetReportAsync` loads Customer, Items, and Products with EF `Include` and maps them to `InvoiceReportDto`. `CrystalReportService.CreateInvoiceDataTable` converts that object into the flat `InvoiceRows` table. Every item becomes one row; invoice header and total fields repeat on each row. Crystal binds this predictable table to the `.rpt`, then exports it as PDF in the same web request.
 
-### Create the real InvoiceReport.rpt
+### Edit or recreate InvoiceReport.rpt
 
-The `.rpt` is a proprietary binary designer file and must not be faked. If it is not present:
+The project includes a genuine, XSD-bound `InvoiceReport.rpt` that has generated a verified Crystal PDF. To learn, edit, or recreate it in the SAP designer:
 
 1. Open the project in Visual Studio with SAP Crystal Reports for Visual Studio installed.
 2. Right-click `Reports` -> **Add** -> **New Item** -> **Crystal Report**.

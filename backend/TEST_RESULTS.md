@@ -66,10 +66,11 @@ The API was hosted in one 64-bit IIS Express process at `http://localhost:51234`
 | Check | Result | Evidence |
 |---|---|---|
 | In-process Crystal service code | PASS | A per-request `ReportDocument` loads `~/Reports/InvoiceReport.rpt`, binds `InvoiceRows`, exports PDF, and disposes all streams/report state. |
-| Missing-report behavior | PASS | `/api/reports/invoices/1/pdf` returned controlled HTTP 500 JSON: `InvoiceReport.rpt was not found.` |
-| Genuine `InvoiceReport.rpt` | MANUAL GATE | SAP runtime/assemblies and Visual Studio item templates are installed, but no configured binary invoice report currently exists. A blank template is not accepted as the finished report. Follow `README.md` to create and bind it in the SAP designer. |
-| Real PDF HTTP 200 | NOT RUN | Requires the configured genuine `.rpt`. |
-| `application/pdf`, size, `%PDF-`, visual inspection | NOT RUN | Must not be claimed until the designer gate is complete. |
+| Missing-report behavior | PASS | Before adding the report, `/api/reports/invoices/1/pdf` returned controlled HTTP 500 JSON: `InvoiceReport.rpt was not found.` |
+| Genuine `InvoiceReport.rpt` | PASS | Crystal SDK inspection loaded the binary report, found table `InvoiceRows`, all 14 exact fields, and the required header/detail/footer objects. |
+| Real PDF HTTP 200 | PASS | `/api/reports/invoices/1/pdf` returned HTTP 200 with attachment filename `Invoice_INV-2026-0001.pdf`. |
+| PDF content type, size, and signature | PASS | `application/pdf`; 41,137 bytes; first five bytes `%PDF-`. |
+| Report content inspection | PASS | `pdftotext -layout` confirmed INVOICE header, customer details, all three products, subtotal 90,500.00, discount 1,000.00, and grand total 89,500.00. |
 
 ## Fixes found by real testing
 

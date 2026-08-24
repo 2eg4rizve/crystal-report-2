@@ -118,6 +118,9 @@
     <Content Include="Web.config" />
     <Content Include="packages.config" />
     <Content Include="Reports\InvoiceReportData.xsd" />
+    <Content Include="Reports\InvoiceReport.rpt" Condition="Exists('Reports\InvoiceReport.rpt')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Migrations\MigrationAttribute.cs" />
@@ -131,6 +134,14 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\InvoiceReportData.xsc">
+      <DependentUpon>InvoiceReportData.xsd</DependentUpon>
+    </Content>
+    <Content Include="Reports\InvoiceReportData.xss">
+      <DependentUpon>InvoiceReportData.xsd</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
