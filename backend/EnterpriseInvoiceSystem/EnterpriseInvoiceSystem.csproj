@@ -7,35 +7,127 @@
     <ProjectGuid>{87B939CB-0B29-4E8D-91E5-53D18D85085B}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType><RootNamespace>EnterpriseInvoiceSystem</RootNamespace><AssemblyName>EnterpriseInvoiceSystem</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion><UseIISExpress>true</UseIISExpress><IISExpressSSLPort>44371</IISExpressSSLPort>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">17.0</VisualStudioVersion><VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Use64BitIISExpress>true</Use64BitIISExpress><Prefer32Bit>false</Prefer32Bit><LangVersion>latest</LangVersion>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EnterpriseInvoiceSystem</RootNamespace>
+    <AssemblyName>EnterpriseInvoiceSystem</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44371</IISExpressSSLPort>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">17.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Use64BitIISExpress>true</Use64BitIISExpress>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' "><DebugSymbols>true</DebugSymbols><DebugType>full</DebugType><Optimize>false</Optimize><OutputPath>bin\</OutputPath><DefineConstants>DEBUG;TRACE</DefineConstants><PlatformTarget>x64</PlatformTarget><Prefer32Bit>false</Prefer32Bit></PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' "><DebugType>pdbonly</DebugType><Optimize>true</Optimize><OutputPath>bin\</OutputPath><DefineConstants>TRACE</DefineConstants><PlatformTarget>x64</PlatformTarget><Prefer32Bit>false</Prefer32Bit></PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/><Reference Include="System.ComponentModel.DataAnnotations"/><Reference Include="System.Configuration"/><Reference Include="System.Core"/><Reference Include="System.Data"/><Reference Include="System.Data.DataSetExtensions"/><Reference Include="System.Net.Http"/><Reference Include="System.Web"/><Reference Include="System.Web.Extensions"/><Reference Include="System.Xml"/><Reference Include="System.Xml.Linq"/>
-    <Reference Include="EntityFramework"><HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath></Reference>
-    <Reference Include="EntityFramework.SqlServer"><HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath></Reference>
-    <Reference Include="Newtonsoft.Json"><HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath></Reference>
-    <Reference Include="System.Net.Http.Formatting"><HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath></Reference>
-    <Reference Include="System.Web.Http"><HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.9\lib\net45\System.Web.Http.dll</HintPath></Reference>
-    <Reference Include="System.Web.Http.WebHost"><HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.9\lib\net45\System.Web.Http.WebHost.dll</HintPath></Reference>
-    <Reference Include="Swashbuckle.Core"><HintPath>..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath></Reference>
-    <Reference Include="WebActivatorEx"><HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath></Reference>
-    <Reference Include="Microsoft.Web.Infrastructure"><HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.1\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath></Reference>
-    <Reference Include="CrystalDecisions.CrystalReports.Engine"/><Reference Include="CrystalDecisions.Shared"/><Reference Include="CrystalDecisions.ReportSource"/><Reference Include="CrystalDecisions.Web"/>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Web, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.9\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.9\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Swashbuckle.Core">
+      <HintPath>..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.1\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\SwaggerConfig.cs"/><Compile Include="App_Start\WebApiConfig.cs"/><Compile Include="Controllers\CustomersController.cs"/><Compile Include="Controllers\HealthController.cs"/><Compile Include="Controllers\InvoicesController.cs"/><Compile Include="Controllers\ProductsController.cs"/><Compile Include="Controllers\ReportsController.cs"/><Compile Include="Data\EnterpriseDbContext.cs"/><Compile Include="Data\EnterpriseDbInitializer.cs"/><Compile Include="Data\Migrations\Configuration.cs"/><Compile Include="Data\Migrations\InitialCreate.cs"/><Compile Include="DTOs\CustomerDtos.cs"/><Compile Include="DTOs\InvoiceDtos.cs"/><Compile Include="DTOs\InvoiceReportDto.cs"/><Compile Include="DTOs\ProductDtos.cs"/><Compile Include="Models\Customer.cs"/><Compile Include="Models\Invoice.cs"/><Compile Include="Models\InvoiceItem.cs"/><Compile Include="Models\Product.cs"/><Compile Include="Services\CustomerService.cs"/><Compile Include="Services\CrystalReportService.cs"/><Compile Include="Services\InvoiceService.cs"/><Compile Include="Services\ProductService.cs"/><Compile Include="Properties\AssemblyInfo.cs"/><Compile Include="Global.asax.cs"><DependentUpon>Global.asax</DependentUpon></Compile>
+    <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\HealthController.cs" />
+    <Compile Include="Controllers\InvoicesController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Data\EnterpriseDbContext.cs" />
+    <Compile Include="Data\EnterpriseDbInitializer.cs" />
+    <Compile Include="Data\Migrations\Configuration.cs" />
+    <Compile Include="Data\Migrations\InitialCreate.cs" />
+    <Compile Include="DTOs\CustomerDtos.cs" />
+    <Compile Include="DTOs\InvoiceDtos.cs" />
+    <Compile Include="DTOs\InvoiceReportDto.cs" />
+    <Compile Include="DTOs\ProductDtos.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Invoice.cs" />
+    <Compile Include="Models\InvoiceItem.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Services\CustomerService.cs" />
+    <Compile Include="Services\CrystalReportService.cs" />
+    <Compile Include="Services\InvoiceService.cs" />
+    <Compile Include="Services\ProductService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
   </ItemGroup>
-  <ItemGroup><Content Include="Global.asax"/><Content Include="Web.config"/><Content Include="packages.config"/><Content Include="Reports\InvoiceReportData.xsd"/><Content Include="Reports\InvoiceReport.rpt" Condition="Exists('Reports\InvoiceReport.rpt')"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Migrations\MigrationAttribute.cs"/>
-    <Compile Include="Data\Migrations\202608240628323_InitialCreate.cs"/>
-    <Compile Include="Data\Migrations\202608240628323_InitialCreate.Designer.cs"><DependentUpon>202608240628323_InitialCreate.cs</DependentUpon></Compile>
-    <EmbeddedResource Include="Data\Migrations\202608240628323_InitialCreate.resx"><DependentUpon>202608240628323_InitialCreate.cs</DependentUpon></EmbeddedResource>
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+    <Content Include="packages.config" />
+    <Content Include="Reports\InvoiceReportData.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\Migrations\MigrationAttribute.cs" />
+    <Compile Include="Data\Migrations\202608240628323_InitialCreate.cs" />
+    <Compile Include="Data\Migrations\202608240628323_InitialCreate.Designer.cs">
+      <DependentUpon>202608240628323_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Data\Migrations\202608240628323_InitialCreate.resx">
+      <DependentUpon>202608240628323_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -43,5 +135,23 @@
     <WebApplicationTargetsPath Condition="'$(WebApplicationTargetsPath)' == '' and Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets')">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v17.0\WebApplications\Microsoft.WebApplication.targets</WebApplicationTargetsPath>
   </PropertyGroup>
   <Import Project="$(WebApplicationTargetsPath)" Condition="Exists('$(WebApplicationTargetsPath)')" />
-  <ProjectExtensions><VisualStudio><FlavorProperties GUID="{349C5851-65DF-11DA-9384-00065B846F21}"><WebProjectProperties><UseIIS>False</UseIIS><AutoAssignPort>True</AutoAssignPort><DevelopmentServerPort>51234</DevelopmentServerPort><DevelopmentServerVPath>/</DevelopmentServerVPath><IISUrl>http://localhost:51234/</IISUrl><NTLMAuthentication>False</NTLMAuthentication><UseCustomServer>False</UseCustomServer><CustomServerUrl></CustomServerUrl><SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile><StartPageUrl>swagger</StartPageUrl></WebProjectProperties></FlavorProperties></VisualStudio></ProjectExtensions>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349C5851-65DF-11DA-9384-00065B846F21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>51234</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:51234/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <StartPageUrl>swagger</StartPageUrl>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
