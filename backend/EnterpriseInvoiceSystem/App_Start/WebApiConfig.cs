@@ -10,6 +10,7 @@ namespace EnterpriseInvoiceSystem.App_Start
     {
         public static void Register(HttpConfiguration config)
         {
+            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Never;
             config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

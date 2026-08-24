@@ -17,7 +17,7 @@ namespace EnterpriseInvoiceSystem.Controllers
             return Ok(await service.GetAllAsync());
         }
 
-        [HttpGet, Route("{id:int}")]
+        [HttpGet, Route("{id:int}", Name = "GetInvoiceById")]
         public async Task<IHttpActionResult> Get(int id)
         {
             var x = await service.GetAsync(id);
@@ -32,7 +32,7 @@ namespace EnterpriseInvoiceSystem.Controllers
             try
             {
                 var x = await service.CreateAsync(r);
-                return CreatedAtRoute("DefaultApi", new { id = x.Id }, x);
+                return CreatedAtRoute("GetInvoiceById", new { id = x.Id }, x);
             }
             catch (ConflictException ex)
             {

@@ -30,10 +30,7 @@ namespace EnterpriseInvoiceSystem.DTOs
         )]
         public decimal DiscountAmount { get; set; }
 
-        [
-            Required(ErrorMessage = "At least one invoice item is required."),
-            MinLength(1, ErrorMessage = "At least one invoice item is required.")
-        ]
+        [Required(ErrorMessage = "At least one invoice item is required.")]
         public List<CreateInvoiceItemRequest> Items { get; set; }
     }
 
