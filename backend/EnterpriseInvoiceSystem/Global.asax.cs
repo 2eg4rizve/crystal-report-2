@@ -13,5 +13,14 @@ namespace EnterpriseInvoiceSystem
             Database.SetInitializer(new EnterpriseDbInitializer());
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
+
+        protected void Application_BeginRequest()
+        {
+            if (Request.AppRelativeCurrentExecutionFilePath == "~/")
+            {
+                Response.Redirect("~/swagger", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+        }
     }
 }
