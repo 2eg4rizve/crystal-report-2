@@ -50,11 +50,42 @@ This repository already contains the `InitialCreate` migration. `Update-Database
 
 ## Run and test
 
-Press F5. The configured start page is Swagger:
+### First-time Visual Studio steps
+
+1. Clone or update the repository:
+
+   ```powershell
+   git clone https://github.com/2eg4rizve/crystal-report-2.git
+   cd crystal-report-2\backend
+   ```
+
+   If it is already cloned, run `git pull origin main` instead.
+
+2. Start Visual Studio 2022 and choose **Open a project or solution**.
+3. Open only `backend/EnterpriseInvoiceSystem.sln`—do not use **Open Folder** and do not create another solution.
+4. In Solution Explorer, right-click the solution and choose **Restore NuGet Packages**.
+5. Select **Debug** and **x64** in the toolbar.
+6. Right-click `EnterpriseInvoiceSystem` and choose **Set as Startup Project**.
+7. Verify `EnterpriseInvoiceSystem/Web.config` points to your reachable SQL Server instance. The supplied value is `RIZVE\SQLEXPRESS` with Windows Authentication.
+8. Press **F5** (debug) or **Ctrl+F5** (run without debugger).
+
+The configured local URL and Swagger start page are:
 
 ```text
 http://localhost:51234/swagger
 ```
+
+The first database-backed request applies the EF6 migration and idempotently inserts the sample data. You can also run `Update-Database -Verbose` from Package Manager Console before F5.
+
+### If Visual Studio says the project was not loaded
+
+1. Close Visual Studio completely.
+2. Delete the repository's generated `.vs` directory.
+3. Open Visual Studio Installer and confirm **ASP.NET and web development**, **.NET Framework 4.8 targeting pack**, and **.NET Framework project and item templates** are installed.
+4. Reopen the `.sln` through **Open a project or solution**.
+5. If the project is unavailable, right-click it and select **Reload Project**, then inspect **View → Output → Solution** for the exact load error.
+
+Do not use `dotnet run`; this is a classic .NET Framework ASP.NET application hosted by IIS Express, not an ASP.NET Core application.
 
 Recommended order:
 

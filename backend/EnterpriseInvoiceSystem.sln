@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{349C5851-65DF-11DA-9384-00065B846F21}") = "EnterpriseInvoiceSystem", "EnterpriseInvoiceSystem\EnterpriseInvoiceSystem.csproj", "{87B939CB-0B29-4E8D-91E5-53D18D85085B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnterpriseInvoiceSystem", "EnterpriseInvoiceSystem\EnterpriseInvoiceSystem.csproj", "{87B939CB-0B29-4E8D-91E5-53D18D85085B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
