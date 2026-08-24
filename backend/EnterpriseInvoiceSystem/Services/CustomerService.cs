@@ -1,2 +1,105 @@
-using System; using System.Collections.Generic; using System.Data.Entity; using System.Linq; using System.Threading.Tasks; using EnterpriseInvoiceSystem.Data; using EnterpriseInvoiceSystem.DTOs; using EnterpriseInvoiceSystem.Models;
-namespace EnterpriseInvoiceSystem.Services { public class CustomerService { public async Task<List<CustomerResponse>> GetAllAsync(){using(var db=new EnterpriseDbContext())return await db.Customers.OrderBy(x=>x.Id).Select(x=>new CustomerResponse{Id=x.Id,Name=x.Name,Phone=x.Phone,Address=x.Address,CreatedAtUtc=x.CreatedAtUtc}).ToListAsync();} public async Task<CustomerResponse> GetAsync(int id){using(var db=new EnterpriseDbContext()){var x=await db.Customers.FindAsync(id);return Map(x);}} public async Task<CustomerResponse> CreateAsync(CreateCustomerRequest r){using(var db=new EnterpriseDbContext()){var x=new Customer{Name=r.Name.Trim(),Phone=r.Phone.Trim(),Address=Trim(r.Address),CreatedAtUtc=DateTime.UtcNow};db.Customers.Add(x);await db.SaveChangesAsync();return Map(x);}} public async Task<bool> UpdateAsync(int id,UpdateCustomerRequest r){using(var db=new EnterpriseDbContext()){var x=await db.Customers.FindAsync(id);if(x==null)return false;x.Name=r.Name.Trim();x.Phone=r.Phone.Trim();x.Address=Trim(r.Address);await db.SaveChangesAsync();return true;}} public async Task<int> DeleteAsync(int id){using(var db=new EnterpriseDbContext()){var x=await db.Customers.FindAsync(id);if(x==null)return 0;if(await db.Invoices.AnyAsync(i=>i.CustomerId==id))return -1;db.Customers.Remove(x);await db.SaveChangesAsync();return 1;}} static string Trim(string s){return string.IsNullOrWhiteSpace(s)?null:s.Trim();} static CustomerResponse Map(Customer x){return x==null?null:new CustomerResponse{Id=x.Id,Name=x.Name,Phone=x.Phone,Address=x.Address,CreatedAtUtc=x.CreatedAtUtc};} } }
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using EnterpriseInvoiceSystem.Data;
+using EnterpriseInvoiceSystem.DTOs;
+using EnterpriseInvoiceSystem.Models;
+
+namespace EnterpriseInvoiceSystem.Services
+{
+    public class CustomerService
+    {
+        public async Task<List<CustomerResponse>> GetAllAsync()
+        {
+            using (var db = new EnterpriseDbContext())
+                return await db
+                    .Customers.OrderBy(x => x.Id)
+                    .Select(x => new CustomerResponse
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Phone = x.Phone,
+                        Address = x.Address,
+                        CreatedAtUtc = x.CreatedAtUtc,
+                    })
+                    .ToListAsync();
+        }
+
+        public async Task<CustomerResponse> GetAsync(int id)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = await db.Customers.FindAsync(id);
+                return Map(x);
+            }
+        }
+
+        public async Task<CustomerResponse> CreateAsync(CreateCustomerRequest r)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = new Customer
+                {
+                    Name = r.Name.Trim(),
+                    Phone = r.Phone.Trim(),
+                    Address = Trim(r.Address),
+                    CreatedAtUtc = DateTime.UtcNow,
+                };
+                db.Customers.Add(x);
+                await db.SaveChangesAsync();
+                return Map(x);
+            }
+        }
+
+        public async Task<bool> UpdateAsync(int id, UpdateCustomerRequest r)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = await db.Customers.FindAsync(id);
+                if (x == null)
+                    return false;
+                x.Name = r.Name.Trim();
+                x.Phone = r.Phone.Trim();
+                x.Address = Trim(r.Address);
+                await db.SaveChangesAsync();
+                return true;
+            }
+        }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = await db.Customers.FindAsync(id);
+                if (x == null)
+                    return 0;
+                if (await db.Invoices.AnyAsync(i => i.CustomerId == id))
+                    return -1;
+                db.Customers.Remove(x);
+                await db.SaveChangesAsync();
+                return 1;
+            }
+        }
+
+        static string Trim(string s)
+        {
+            return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+        }
+
+        static CustomerResponse Map(Customer x)
+        {
+            return x == null
+                ? null
+                : new CustomerResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Phone = x.Phone,
+                    Address = x.Address,
+                    CreatedAtUtc = x.CreatedAtUtc,
+                };
+        }
+    }
+}

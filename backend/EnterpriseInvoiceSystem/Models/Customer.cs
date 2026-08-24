@@ -1,2 +1,27 @@
-using System; using System.Collections.Generic; using System.ComponentModel.DataAnnotations;
-namespace EnterpriseInvoiceSystem.Models { public class Customer { public Customer(){Invoices=new HashSet<Invoice>();} public int Id{get;set;} [Required,MaxLength(100)] public string Name{get;set;} [Required,MaxLength(30)] public string Phone{get;set;} [MaxLength(250)] public string Address{get;set;} public DateTime CreatedAtUtc{get;set;} public virtual ICollection<Invoice> Invoices{get;set;} } }
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace EnterpriseInvoiceSystem.Models
+{
+    public class Customer
+    {
+        public Customer()
+        {
+            Invoices = new HashSet<Invoice>();
+        }
+
+        public int Id { get; set; }
+
+        [Required, MaxLength(100)]
+        public string Name { get; set; }
+
+        [Required, MaxLength(30)]
+        public string Phone { get; set; }
+
+        [MaxLength(250)]
+        public string Address { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
+        public virtual ICollection<Invoice> Invoices { get; set; }
+    }
+}

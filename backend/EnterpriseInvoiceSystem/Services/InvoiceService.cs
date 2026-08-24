@@ -1,3 +1,194 @@
-using System; using System.Collections.Generic; using System.Data.Entity; using System.Linq; using System.Threading.Tasks; using EnterpriseInvoiceSystem.Data; using EnterpriseInvoiceSystem.DTOs; using EnterpriseInvoiceSystem.Models;
-namespace EnterpriseInvoiceSystem.Services { public class BusinessException:Exception { public BusinessException(string message):base(message){} } public class ConflictException:BusinessException { public ConflictException(string message):base(message){} }
-public class InvoiceService { public async Task<List<InvoiceSummaryResponse>> GetAllAsync(){using(var db=new EnterpriseDbContext())return await db.Invoices.Include(x=>x.Customer).OrderByDescending(x=>x.InvoiceDate).Select(x=>new InvoiceSummaryResponse{Id=x.Id,InvoiceNumber=x.InvoiceNumber,InvoiceDate=x.InvoiceDate,CustomerId=x.CustomerId,CustomerName=x.Customer.Name,DiscountAmount=x.DiscountAmount,TotalAmount=x.TotalAmount}).ToListAsync();} public async Task<InvoiceResponse> GetAsync(int id){using(var db=new EnterpriseDbContext()){var x=await Query(db).SingleOrDefaultAsync(i=>i.Id==id);return Map(x);}} public async Task<InvoiceResponse> CreateAsync(CreateInvoiceRequest r){if(r.Items==null||r.Items.Count==0)throw new BusinessException("At least one invoice item is required.");var number=(r.InvoiceNumber??"").Trim();if(number.Length==0)throw new BusinessException("Invoice number is required.");if(r.Items.GroupBy(x=>x.ProductId).Any(g=>g.Count()>1))throw new BusinessException("A product cannot appear twice in the same invoice.");if(r.Items.Any(x=>x.Quantity<=0))throw new BusinessException("Quantity must be greater than zero.");if(r.DiscountAmount<0)throw new BusinessException("Discount cannot be negative.");using(var db=new EnterpriseDbContext()){if(await db.Invoices.AnyAsync(x=>x.InvoiceNumber==number))throw new ConflictException("Invoice number already exists.");if(!await db.Customers.AnyAsync(x=>x.Id==r.CustomerId))throw new BusinessException("Customer "+r.CustomerId+" was not found.");var ids=r.Items.Select(x=>x.ProductId).Distinct().ToList();var products=await db.Products.Where(x=>ids.Contains(x.Id)).ToDictionaryAsync(x=>x.Id);var missing=ids.FirstOrDefault(x=>!products.ContainsKey(x));if(missing!=0)throw new BusinessException("Product "+missing+" was not found.");var subtotal=r.Items.Sum(i=>products[i.ProductId].UnitPrice*i.Quantity);if(r.DiscountAmount>subtotal)throw new BusinessException("Discount cannot exceed subtotal.");using(var tx=db.Database.BeginTransaction()){try{var invoice=new Invoice{InvoiceNumber=number,InvoiceDate=r.InvoiceDate==default(DateTime)?DateTime.UtcNow:r.InvoiceDate,CustomerId=r.CustomerId,DiscountAmount=r.DiscountAmount,TotalAmount=subtotal-r.DiscountAmount,CreatedAtUtc=DateTime.UtcNow};foreach(var item in r.Items){var price=products[item.ProductId].UnitPrice;invoice.Items.Add(new InvoiceItem{ProductId=item.ProductId,Quantity=item.Quantity,UnitPrice=price,LineTotal=price*item.Quantity});}db.Invoices.Add(invoice);await db.SaveChangesAsync();tx.Commit();return await GetAsync(invoice.Id);}catch{tx.Rollback();throw;}}}} public async Task<InvoiceReportDto> GetReportAsync(int id){using(var db=new EnterpriseDbContext()){var x=await Query(db).SingleOrDefaultAsync(i=>i.Id==id);if(x==null)return null;return new InvoiceReportDto{InvoiceId=x.Id,InvoiceNumber=x.InvoiceNumber,InvoiceDate=x.InvoiceDate,CustomerName=x.Customer.Name,CustomerPhone=x.Customer.Phone,CustomerAddress=x.Customer.Address,Subtotal=x.Items.Sum(i=>i.LineTotal),DiscountAmount=x.DiscountAmount,TotalAmount=x.TotalAmount,Items=x.Items.OrderBy(i=>i.Id).Select(i=>new InvoiceReportItemDto{ProductId=i.ProductId,ProductName=i.Product.Name,Quantity=i.Quantity,UnitPrice=i.UnitPrice,LineTotal=i.LineTotal}).ToList()};}} static IQueryable<Invoice> Query(EnterpriseDbContext db){return db.Invoices.Include(x=>x.Customer).Include(x=>x.Items.Select(i=>i.Product));} static InvoiceResponse Map(Invoice x){return x==null?null:new InvoiceResponse{Id=x.Id,InvoiceNumber=x.InvoiceNumber,InvoiceDate=x.InvoiceDate,CustomerId=x.CustomerId,CustomerName=x.Customer.Name,Subtotal=x.Items.Sum(i=>i.LineTotal),DiscountAmount=x.DiscountAmount,TotalAmount=x.TotalAmount,Items=x.Items.OrderBy(i=>i.Id).Select(i=>new InvoiceItemResponse{ProductId=i.ProductId,ProductName=i.Product.Name,Quantity=i.Quantity,UnitPrice=i.UnitPrice,LineTotal=i.LineTotal}).ToList()};} } }
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using EnterpriseInvoiceSystem.Data;
+using EnterpriseInvoiceSystem.DTOs;
+using EnterpriseInvoiceSystem.Models;
+
+namespace EnterpriseInvoiceSystem.Services
+{
+    public class BusinessException : Exception
+    {
+        public BusinessException(string message)
+            : base(message) { }
+    }
+
+    public class ConflictException : BusinessException
+    {
+        public ConflictException(string message)
+            : base(message) { }
+    }
+
+    public class InvoiceService
+    {
+        public async Task<List<InvoiceSummaryResponse>> GetAllAsync()
+        {
+            using (var db = new EnterpriseDbContext())
+                return await db
+                    .Invoices.Include(x => x.Customer)
+                    .OrderByDescending(x => x.InvoiceDate)
+                    .Select(x => new InvoiceSummaryResponse
+                    {
+                        Id = x.Id,
+                        InvoiceNumber = x.InvoiceNumber,
+                        InvoiceDate = x.InvoiceDate,
+                        CustomerId = x.CustomerId,
+                        CustomerName = x.Customer.Name,
+                        DiscountAmount = x.DiscountAmount,
+                        TotalAmount = x.TotalAmount,
+                    })
+                    .ToListAsync();
+        }
+
+        public async Task<InvoiceResponse> GetAsync(int id)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = await Query(db).SingleOrDefaultAsync(i => i.Id == id);
+                return Map(x);
+            }
+        }
+
+        public async Task<InvoiceResponse> CreateAsync(CreateInvoiceRequest r)
+        {
+            if (r.Items == null || r.Items.Count == 0)
+                throw new BusinessException("At least one invoice item is required.");
+            var number = (r.InvoiceNumber ?? "").Trim();
+            if (number.Length == 0)
+                throw new BusinessException("Invoice number is required.");
+            if (r.Items.GroupBy(x => x.ProductId).Any(g => g.Count() > 1))
+                throw new BusinessException("A product cannot appear twice in the same invoice.");
+            if (r.Items.Any(x => x.Quantity <= 0))
+                throw new BusinessException("Quantity must be greater than zero.");
+            if (r.DiscountAmount < 0)
+                throw new BusinessException("Discount cannot be negative.");
+            using (var db = new EnterpriseDbContext())
+            {
+                if (await db.Invoices.AnyAsync(x => x.InvoiceNumber == number))
+                    throw new ConflictException("Invoice number already exists.");
+                if (!await db.Customers.AnyAsync(x => x.Id == r.CustomerId))
+                    throw new BusinessException("Customer " + r.CustomerId + " was not found.");
+                var ids = r.Items.Select(x => x.ProductId).Distinct().ToList();
+                var products = await db
+                    .Products.Where(x => ids.Contains(x.Id))
+                    .ToDictionaryAsync(x => x.Id);
+                var missing = ids.FirstOrDefault(x => !products.ContainsKey(x));
+                if (missing != 0)
+                    throw new BusinessException("Product " + missing + " was not found.");
+                var subtotal = r.Items.Sum(i => products[i.ProductId].UnitPrice * i.Quantity);
+                if (r.DiscountAmount > subtotal)
+                    throw new BusinessException("Discount cannot exceed subtotal.");
+                using (var tx = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var invoice = new Invoice
+                        {
+                            InvoiceNumber = number,
+                            InvoiceDate =
+                                r.InvoiceDate == default(DateTime)
+                                    ? DateTime.UtcNow
+                                    : r.InvoiceDate,
+                            CustomerId = r.CustomerId,
+                            DiscountAmount = r.DiscountAmount,
+                            TotalAmount = subtotal - r.DiscountAmount,
+                            CreatedAtUtc = DateTime.UtcNow,
+                        };
+                        foreach (var item in r.Items)
+                        {
+                            var price = products[item.ProductId].UnitPrice;
+                            invoice.Items.Add(
+                                new InvoiceItem
+                                {
+                                    ProductId = item.ProductId,
+                                    Quantity = item.Quantity,
+                                    UnitPrice = price,
+                                    LineTotal = price * item.Quantity,
+                                }
+                            );
+                        }
+                        db.Invoices.Add(invoice);
+                        await db.SaveChangesAsync();
+                        tx.Commit();
+                        return await GetAsync(invoice.Id);
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public async Task<InvoiceReportDto> GetReportAsync(int id)
+        {
+            using (var db = new EnterpriseDbContext())
+            {
+                var x = await Query(db).SingleOrDefaultAsync(i => i.Id == id);
+                if (x == null)
+                    return null;
+                return new InvoiceReportDto
+                {
+                    InvoiceId = x.Id,
+                    InvoiceNumber = x.InvoiceNumber,
+                    InvoiceDate = x.InvoiceDate,
+                    CustomerName = x.Customer.Name,
+                    CustomerPhone = x.Customer.Phone,
+                    CustomerAddress = x.Customer.Address,
+                    Subtotal = x.Items.Sum(i => i.LineTotal),
+                    DiscountAmount = x.DiscountAmount,
+                    TotalAmount = x.TotalAmount,
+                    Items = x
+                        .Items.OrderBy(i => i.Id)
+                        .Select(i => new InvoiceReportItemDto
+                        {
+                            ProductId = i.ProductId,
+                            ProductName = i.Product.Name,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            LineTotal = i.LineTotal,
+                        })
+                        .ToList(),
+                };
+            }
+        }
+
+        static IQueryable<Invoice> Query(EnterpriseDbContext db)
+        {
+            return db
+                .Invoices.Include(x => x.Customer)
+                .Include(x => x.Items.Select(i => i.Product));
+        }
+
+        static InvoiceResponse Map(Invoice x)
+        {
+            return x == null
+                ? null
+                : new InvoiceResponse
+                {
+                    Id = x.Id,
+                    InvoiceNumber = x.InvoiceNumber,
+                    InvoiceDate = x.InvoiceDate,
+                    CustomerId = x.CustomerId,
+                    CustomerName = x.Customer.Name,
+                    Subtotal = x.Items.Sum(i => i.LineTotal),
+                    DiscountAmount = x.DiscountAmount,
+                    TotalAmount = x.TotalAmount,
+                    Items = x
+                        .Items.OrderBy(i => i.Id)
+                        .Select(i => new InvoiceItemResponse
+                        {
+                            ProductId = i.ProductId,
+                            ProductName = i.Product.Name,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            LineTotal = i.LineTotal,
+                        })
+                        .ToList(),
+                };
+        }
+    }
+}

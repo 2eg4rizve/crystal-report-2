@@ -1,2 +1,27 @@
-using System; using System.Collections.Generic; using System.ComponentModel.DataAnnotations; using System.ComponentModel.DataAnnotations.Schema;
-namespace EnterpriseInvoiceSystem.Models { public class Invoice { public Invoice(){Items=new HashSet<InvoiceItem>();} public int Id{get;set;} [Required,MaxLength(50),Index("IX_InvoiceNumber",IsUnique=true)] public string InvoiceNumber{get;set;} public DateTime InvoiceDate{get;set;} public int CustomerId{get;set;} public decimal DiscountAmount{get;set;} public decimal TotalAmount{get;set;} public DateTime CreatedAtUtc{get;set;} public virtual Customer Customer{get;set;} public virtual ICollection<InvoiceItem> Items{get;set;} } }
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EnterpriseInvoiceSystem.Models
+{
+    public class Invoice
+    {
+        public Invoice()
+        {
+            Items = new HashSet<InvoiceItem>();
+        }
+
+        public int Id { get; set; }
+
+        [Required, MaxLength(50), Index("IX_InvoiceNumber", IsUnique = true)]
+        public string InvoiceNumber { get; set; }
+        public DateTime InvoiceDate { get; set; }
+        public int CustomerId { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal TotalAmount { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
+        public virtual Customer Customer { get; set; }
+        public virtual ICollection<InvoiceItem> Items { get; set; }
+    }
+}

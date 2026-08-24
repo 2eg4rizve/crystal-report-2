@@ -1,2 +1,102 @@
-using System; using System.Data.Entity; using System.Linq; using EnterpriseInvoiceSystem.Models;
-namespace EnterpriseInvoiceSystem.Data { public class EnterpriseDbInitializer:MigrateDatabaseToLatestVersion<EnterpriseDbContext,Migrations.Configuration>{} public static class SeedData { public static void Seed(EnterpriseDbContext db){ var now=DateTime.UtcNow; EnsureCustomer(db,"Rizve Enterprise","01711000001","Dhaka, Bangladesh",now); EnsureCustomer(db,"ABC Trading","01811000002","Chattogram, Bangladesh",now); EnsureProduct(db,"Business Laptop",85000m,now); EnsureProduct(db,"Wireless Mouse",1500m,now); EnsureProduct(db,"Office Keyboard",2500m,now); db.SaveChanges(); if(!db.Invoices.Any(x=>x.InvoiceNumber=="INV-2026-0001")){ var customer=db.Customers.Single(x=>x.Name=="Rizve Enterprise"); var laptop=db.Products.Single(x=>x.Name=="Business Laptop"); var mouse=db.Products.Single(x=>x.Name=="Wireless Mouse"); var keyboard=db.Products.Single(x=>x.Name=="Office Keyboard"); var invoice=new Invoice{InvoiceNumber="INV-2026-0001",InvoiceDate=new DateTime(2026,8,24),CustomerId=customer.Id,DiscountAmount=1000m,TotalAmount=89500m,CreatedAtUtc=now}; invoice.Items.Add(new InvoiceItem{ProductId=laptop.Id,Quantity=1,UnitPrice=85000m,LineTotal=85000m}); invoice.Items.Add(new InvoiceItem{ProductId=mouse.Id,Quantity=2,UnitPrice=1500m,LineTotal=3000m}); invoice.Items.Add(new InvoiceItem{ProductId=keyboard.Id,Quantity=1,UnitPrice=2500m,LineTotal=2500m}); db.Invoices.Add(invoice); db.SaveChanges(); } } static void EnsureCustomer(EnterpriseDbContext d,string n,string p,string a,DateTime now){if(!d.Customers.Any(x=>x.Name==n&&x.Phone==p))d.Customers.Add(new Customer{Name=n,Phone=p,Address=a,CreatedAtUtc=now});} static void EnsureProduct(EnterpriseDbContext d,string n,decimal p,DateTime now){if(!d.Products.Any(x=>x.Name==n))d.Products.Add(new Product{Name=n,UnitPrice=p,CreatedAtUtc=now});} } }
+using System;
+using System.Data.Entity;
+using System.Linq;
+using EnterpriseInvoiceSystem.Models;
+
+namespace EnterpriseInvoiceSystem.Data
+{
+    public class EnterpriseDbInitializer
+        : MigrateDatabaseToLatestVersion<EnterpriseDbContext, Migrations.Configuration> { }
+
+    public static class SeedData
+    {
+        public static void Seed(EnterpriseDbContext db)
+        {
+            var now = DateTime.UtcNow;
+            EnsureCustomer(db, "Rizve Enterprise", "01711000001", "Dhaka, Bangladesh", now);
+            EnsureCustomer(db, "ABC Trading", "01811000002", "Chattogram, Bangladesh", now);
+            EnsureProduct(db, "Business Laptop", 85000m, now);
+            EnsureProduct(db, "Wireless Mouse", 1500m, now);
+            EnsureProduct(db, "Office Keyboard", 2500m, now);
+            db.SaveChanges();
+            if (!db.Invoices.Any(x => x.InvoiceNumber == "INV-2026-0001"))
+            {
+                var customer = db.Customers.Single(x => x.Name == "Rizve Enterprise");
+                var laptop = db.Products.Single(x => x.Name == "Business Laptop");
+                var mouse = db.Products.Single(x => x.Name == "Wireless Mouse");
+                var keyboard = db.Products.Single(x => x.Name == "Office Keyboard");
+                var invoice = new Invoice
+                {
+                    InvoiceNumber = "INV-2026-0001",
+                    InvoiceDate = new DateTime(2026, 8, 24),
+                    CustomerId = customer.Id,
+                    DiscountAmount = 1000m,
+                    TotalAmount = 89500m,
+                    CreatedAtUtc = now,
+                };
+                invoice.Items.Add(
+                    new InvoiceItem
+                    {
+                        ProductId = laptop.Id,
+                        Quantity = 1,
+                        UnitPrice = 85000m,
+                        LineTotal = 85000m,
+                    }
+                );
+                invoice.Items.Add(
+                    new InvoiceItem
+                    {
+                        ProductId = mouse.Id,
+                        Quantity = 2,
+                        UnitPrice = 1500m,
+                        LineTotal = 3000m,
+                    }
+                );
+                invoice.Items.Add(
+                    new InvoiceItem
+                    {
+                        ProductId = keyboard.Id,
+                        Quantity = 1,
+                        UnitPrice = 2500m,
+                        LineTotal = 2500m,
+                    }
+                );
+                db.Invoices.Add(invoice);
+                db.SaveChanges();
+            }
+        }
+
+        static void EnsureCustomer(
+            EnterpriseDbContext d,
+            string n,
+            string p,
+            string a,
+            DateTime now
+        )
+        {
+            if (!d.Customers.Any(x => x.Name == n && x.Phone == p))
+                d.Customers.Add(
+                    new Customer
+                    {
+                        Name = n,
+                        Phone = p,
+                        Address = a,
+                        CreatedAtUtc = now,
+                    }
+                );
+        }
+
+        static void EnsureProduct(EnterpriseDbContext d, string n, decimal p, DateTime now)
+        {
+            if (!d.Products.Any(x => x.Name == n))
+                d.Products.Add(
+                    new Product
+                    {
+                        Name = n,
+                        UnitPrice = p,
+                        CreatedAtUtc = now,
+                    }
+                );
+        }
+    }
+}

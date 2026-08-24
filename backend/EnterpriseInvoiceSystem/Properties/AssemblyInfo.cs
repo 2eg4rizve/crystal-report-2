@@ -1,2 +1,11 @@
-using System.Reflection; using System.Runtime.InteropServices;
-[assembly:AssemblyTitle("EnterpriseInvoiceSystem")][assembly:AssemblyDescription("Single-project invoice management Web API")][assembly:AssemblyCompany("Rizve Enterprise")][assembly:AssemblyProduct("Enterprise Invoice System")][assembly:ComVisible(false)][assembly:Guid("b43c68f8-5106-43b5-bd3d-d2911766a5d8")][assembly:AssemblyVersion("1.0.0.0")][assembly:AssemblyFileVersion("1.0.0.0")]
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle("EnterpriseInvoiceSystem")]
+[assembly: AssemblyDescription("Single-project invoice management Web API")]
+[assembly: AssemblyCompany("Rizve Enterprise")]
+[assembly: AssemblyProduct("Enterprise Invoice System")]
+[assembly: ComVisible(false)]
+[assembly: Guid("b43c68f8-5106-43b5-bd3d-d2911766a5d8")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
