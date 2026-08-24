@@ -28,14 +28,12 @@ namespace EnterpriseInvoiceSystem.Controllers
             var invoiceReport = await invoiceService.GetReportAsync(id);
 
             // A missing invoice maps to HTTP 404; otherwise return its data with HTTP 200.
-            return invoiceReport == null
-                ? (IHttpActionResult)NotFound()
-                : Ok(invoiceReport);
+            return invoiceReport == null ? (IHttpActionResult)NotFound() : Ok(invoiceReport);
         }
 
         // Generates and downloads a PDF for the requested invoice.
         [HttpGet, Route("{id:int}/pdf")]
-        public async Task<IHttpActionResult> Pdf(int id)
+        public async Task<IHttpActionResult> Pdf(int id, bool inline = false)
         {
             // Load the same report-ready model that is used by the data endpoint.
             var invoiceReport = await invoiceService.GetReportAsync(id);
@@ -58,9 +56,9 @@ namespace EnterpriseInvoiceSystem.Controllers
                 // Tell clients that the response body contains a PDF document.
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
 
-                // Mark the response as a download and provide a filesystem-safe filename.
+                // Preserve download behavior by default; the frontend can request inline preview.
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(
-                    "attachment"
+                    inline ? "inline" : "attachment"
                 )
                 {
                     FileName = "Invoice_" + Safe(invoiceReport.InvoiceNumber) + ".pdf",

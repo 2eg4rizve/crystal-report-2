@@ -104,6 +104,7 @@
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\InvoiceItem.cs" />
     <Compile Include="Models\Product.cs" />
+    <Compile Include="ReportModels\InvoiceReportDataModel.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\CrystalReportService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
@@ -117,6 +118,11 @@
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="packages.config" />
+    <Content Include="Frontend\index.html" />
+    <Content Include="Frontend\css\invoice-report.css" />
+    <Content Include="Frontend\js\api-config.js" />
+    <Content Include="Frontend\js\invoice-report.js" />
+    <Content Include="Frontend\vendor\jquery-3.7.1.min.js" />
     <Content Include="Reports\InvoiceReportData.xsd" />
     <Content Include="Reports\InvoiceReport.rpt" Condition="Exists('Reports\InvoiceReport.rpt')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

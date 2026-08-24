@@ -9,6 +9,7 @@ There is exactly one solution, one web project, one `.csproj`, one `Web.config`,
 ```text
 HTTP request -> Web API controller -> service -> EF6/SQL Server
                                               -> InvoiceReportDto
+                                              -> InvoiceReportDataModel rows
                                               -> InvoiceRows DataTable
                                               -> InvoiceReport.rpt
                                               -> Crystal PDF bytes
@@ -69,11 +70,13 @@ This repository already contains the `InitialCreate` migration. `Update-Database
 7. Verify `EnterpriseInvoiceSystem/Web.config` points to your reachable SQL Server instance. The supplied value is `RIZVE\SQLEXPRESS` with Windows Authentication.
 8. Press **F5** (debug) or **Ctrl+F5** (run without debugger).
 
-The configured local URL and Swagger start page are:
+The configured local frontend URL is:
 
 ```text
-http://localhost:51234/swagger
+http://localhost:51234/
 ```
+
+Swagger remains available at `http://localhost:51234/swagger`.
 
 The first database-backed request applies the EF6 migration and idempotently inserts the sample data. You can also run `Update-Database -Verbose` from Package Manager Console before F5.
 
@@ -101,7 +104,7 @@ Invoice prices always come from `Products`; client prices are ignored. `InvoiceS
 
 ## Learning Crystal Reports with this project
 
-`InvoiceService.GetReportAsync` loads Customer, Items, and Products with EF `Include` and maps them to `InvoiceReportDto`. `CrystalReportService.CreateInvoiceDataTable` converts that object into the flat `InvoiceRows` table. Every item becomes one row; invoice header and total fields repeat on each row. Crystal binds this predictable table to the `.rpt`, then exports it as PDF in the same web request.
+`InvoiceService.GetReportAsync` loads Customer, Items, and Products with EF `Include` and maps them to `InvoiceReportDto`. `InvoiceReportDataModel.FromInvoice` converts that nested API DTO into one flat binding model per item, and `CrystalReportService.CreateInvoiceDataTable` turns those records into the `InvoiceRows` table. Invoice header and total fields repeat on each row. Crystal binds this predictable table to the `.rpt`, then exports it as PDF in the same web request.
 
 ### Edit or recreate InvoiceReport.rpt
 

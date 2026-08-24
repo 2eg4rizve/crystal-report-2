@@ -18,7 +18,7 @@ namespace EnterpriseInvoiceSystem
         {
             if (Request.AppRelativeCurrentExecutionFilePath == "~/")
             {
-                Response.Redirect("~/swagger", false);
+                Response.Redirect("~/Frontend/index.html", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
         }

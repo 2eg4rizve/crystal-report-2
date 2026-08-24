@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            name="description"
+            content="Search invoices, inspect report-ready data, and open Crystal Report PDFs."
+        />
+        <title>Enterprise Invoice Reports</title>
+        <link rel="stylesheet" href="css/invoice-report.css" />
+    </head>
+    <body>
+        <a class="skip-link" href="#mainContent">Skip to content</a>
+
+        <header class="site-header">
+            <div class="page-shell header-content">
+                <div>
+                    <p class="eyebrow">Enterprise Invoice System</p>
+                    <h1>Invoice reports</h1>
+                    <p class="header-copy">
+                        Find an invoice, review its report data, and open the generated PDF.
+                    </p>
+                </div>
+                <div
+                    id="apiStatus"
+                    class="status-badge status-checking"
+                    role="status"
+                    aria-live="polite"
+                >
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span class="status-text">Checking API</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="mainContent" class="page-shell main-content">
+            <section class="panel search-panel" aria-labelledby="searchHeading">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Invoice directory</p>
+                        <h2 id="searchHeading">Search and load invoices</h2>
+                    </div>
+                    <p id="resultCount" class="result-count" aria-live="polite">
+                        No invoices loaded
+                    </p>
+                </div>
+
+                <div class="toolbar">
+                    <div class="search-field">
+                        <label for="searchInput">Search invoices</label>
+                        <div class="search-input-wrap">
+                            <span class="search-icon" aria-hidden="true">⌕</span>
+                            <input
+                                id="searchInput"
+                                type="search"
+                                placeholder="Invoice ID, number, customer, or date"
+                                autocomplete="off"
+                                disabled
+                            />
+                        </div>
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <button id="clearSearchButton" class="button button-secondary" disabled>
+                            Clear search
+                        </button>
+                        <button id="loadInvoicesButton" class="button button-primary">
+                            <span class="button-label">Load invoices</span>
+                            <span class="button-spinner" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    id="messageBox"
+                    class="message-box"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
+            </section>
+
+            <section class="panel table-panel" aria-labelledby="invoiceListHeading">
+                <div class="section-heading compact-heading">
+                    <div>
+                        <p class="section-kicker">Results</p>
+                        <h2 id="invoiceListHeading">Invoices</h2>
+                    </div>
+                </div>
+
+                <div id="invoiceEmptyState" class="empty-state">
+                    <div class="empty-icon" aria-hidden="true">▤</div>
+                    <h3>Load your invoice directory</h3>
+                    <p>Use the button above to retrieve invoices from the API.</p>
+                </div>
+
+                <div id="invoiceTableWrap" class="table-wrap" hidden>
+                    <table class="data-table">
+                        <caption class="visually-hidden">
+                            Loaded invoices and report actions
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Invoice number</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Customer</th>
+                                <th scope="col" class="numeric-column">Discount</th>
+                                <th scope="col" class="numeric-column">Total</th>
+                                <th scope="col" class="action-column">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section
+                id="invoiceDetailPanel"
+                class="panel detail-panel"
+                aria-labelledby="detailHeading"
+                hidden
+            >
+                <div class="detail-heading">
+                    <div>
+                        <p class="section-kicker">Report-ready data</p>
+                        <h2 id="detailHeading">Selected invoice</h2>
+                        <p id="detailSubtitle" class="detail-subtitle"></p>
+                    </div>
+                    <button
+                        id="closeDetailButton"
+                        class="icon-button"
+                        type="button"
+                        aria-label="Close invoice details"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                <dl class="metadata-grid">
+                    <div>
+                        <dt>Invoice ID</dt>
+                        <dd id="detailInvoiceId">—</dd>
+                    </div>
+                    <div>
+                        <dt>Invoice date</dt>
+                        <dd id="detailInvoiceDate">—</dd>
+                    </div>
+                    <div>
+                        <dt>Customer</dt>
+                        <dd id="detailCustomerName">—</dd>
+                    </div>
+                    <div>
+                        <dt>Phone</dt>
+                        <dd id="detailCustomerPhone">—</dd>
+                    </div>
+                    <div class="metadata-address">
+                        <dt>Address</dt>
+                        <dd id="detailCustomerAddress">—</dd>
+                    </div>
+                </dl>
+
+                <div class="detail-table-wrap">
+                    <table class="data-table detail-table">
+                        <caption class="visually-hidden">Products in the selected invoice</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col" class="numeric-column">Quantity</th>
+                                <th scope="col" class="numeric-column">Unit price</th>
+                                <th scope="col" class="numeric-column">Line total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItemTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="detail-footer">
+                    <button id="openReportButton" class="button button-report" type="button">
+                        Open Crystal Report
+                        <span aria-hidden="true">↗</span>
+                    </button>
+
+                    <dl class="totals-card">
+                        <div>
+                            <dt>Subtotal</dt>
+                            <dd id="detailSubtotal">—</dd>
+                        </div>
+                        <div>
+                            <dt>Discount</dt>
+                            <dd id="detailDiscount">—</dd>
+                        </div>
+                        <div class="grand-total">
+                            <dt>Grand total</dt>
+                            <dd id="detailTotal">—</dd>
+                        </div>
+                    </dl>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="page-shell">
+                <p>Enterprise Invoice System · Crystal Reports workspace</p>
+                <a href="../swagger" target="_blank" rel="noopener">Open API documentation</a>
+            </div>
+        </footer>
+
+        <script src="vendor/jquery-3.7.1.min.js"></script>
+        <script src="js/api-config.js"></script>
+        <script src="js/invoice-report.js"></script>
+    </body>
+</html>

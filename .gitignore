@@ -7,6 +7,6 @@ test-output/
 *.suo
 *.cache
 *.log
-UpgradeLog.htm
-Backup/
+UpgradeLog*.htm
+Backup*/
 .tools/

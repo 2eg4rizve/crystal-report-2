@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web.Hosting;
 using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
 using EnterpriseInvoiceSystem.DTOs;
+using EnterpriseInvoiceSystem.ReportModels;
 
 namespace EnterpriseInvoiceSystem.Services
 {
@@ -30,8 +32,11 @@ namespace EnterpriseInvoiceSystem.Services
             if (string.IsNullOrWhiteSpace(reportPath) || !File.Exists(reportPath))
                 throw new FileNotFoundException("InvoiceReport.rpt was not found.", reportPath);
 
+            // Keep the API DTO nested, then flatten it into the dedicated Crystal binding model.
+            var reportRows = InvoiceReportDataModel.FromInvoice(invoice);
+
             // Crystal Reports consumes a DataTable whose schema matches the fields in the template.
-            var invoiceDataTable = CreateInvoiceDataTable(invoice);
+            var invoiceDataTable = CreateInvoiceDataTable(reportRows);
 
             // ReportDocument owns unmanaged Crystal Reports resources, so dispose it after export.
             using (var reportDocument = new ReportDocument())
@@ -60,14 +65,17 @@ namespace EnterpriseInvoiceSystem.Services
         }
 
         /// <summary>
-        /// Flattens an invoice and its line items into the schema used by InvoiceReport.rpt.
+        /// Builds the schema and rows used by InvoiceReport.rpt.
         /// </summary>
-        /// <param name="invoice">The invoice to transform into Crystal Reports rows.</param>
+        /// <param name="reportRows">Flat report-binding records created from an invoice.</param>
         /// <returns>
         /// A table containing one row per invoice item, with header and total values repeated on each row.
         /// </returns>
-        public DataTable CreateInvoiceDataTable(InvoiceReportDto invoice)
+        public DataTable CreateInvoiceDataTable(IEnumerable<InvoiceReportDataModel> reportRows)
         {
+            if (reportRows == null)
+                throw new ArgumentNullException(nameof(reportRows));
+
             // The table name and every column name/type must match the Crystal Report data schema.
             var invoiceRows = new DataTable("InvoiceRows");
 
@@ -93,26 +101,25 @@ namespace EnterpriseInvoiceSystem.Services
             invoiceRows.Columns.Add("DiscountAmount", typeof(decimal));
             invoiceRows.Columns.Add("TotalAmount", typeof(decimal));
 
-            // Crystal Reports needs a flat row for every item rather than a nested item collection.
-            foreach (var invoiceItem in invoice.Items)
+            // Each binding model already represents one flat Crystal Reports detail row.
+            foreach (var reportRow in reportRows)
             {
                 // Repeat invoice/customer/totals data so every item row is self-contained.
                 invoiceRows.Rows.Add(
-                    invoice.InvoiceId,
-                    invoice.InvoiceNumber,
-                    invoice.InvoiceDate,
-                    invoice.CustomerName,
-                    invoice.CustomerPhone,
-                    // DataTable string fields use an empty value when no address was supplied.
-                    invoice.CustomerAddress ?? "",
-                    invoiceItem.ProductId,
-                    invoiceItem.ProductName,
-                    invoiceItem.Quantity,
-                    invoiceItem.UnitPrice,
-                    invoiceItem.LineTotal,
-                    invoice.Subtotal,
-                    invoice.DiscountAmount,
-                    invoice.TotalAmount
+                    reportRow.InvoiceId,
+                    reportRow.InvoiceNumber,
+                    reportRow.InvoiceDate,
+                    reportRow.CustomerName,
+                    reportRow.CustomerPhone,
+                    reportRow.CustomerAddress,
+                    reportRow.ProductId,
+                    reportRow.ProductName,
+                    reportRow.Quantity,
+                    reportRow.UnitPrice,
+                    reportRow.LineTotal,
+                    reportRow.Subtotal,
+                    reportRow.DiscountAmount,
+                    reportRow.TotalAmount
                 );
             }
 
