@@ -118,9 +118,6 @@
     <Content Include="Web.config" />
     <Content Include="packages.config" />
     <Content Include="Reports\InvoiceReportData.xsd" />
-    <Content Include="Reports\InvoiceReport.rpt" Condition="Exists('Reports\InvoiceReport.rpt')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Migrations\MigrationAttribute.cs" />
