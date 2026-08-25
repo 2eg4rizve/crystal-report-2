@@ -49,8 +49,6 @@ backend/
     │   │   └── invoice-report.js
     │   └── vendor/
     │       └── jquery-3.7.1.min.js
-    ├── ReportModels/
-    │   └── InvoiceReportDataModel.cs
     ├── Controllers/
     │   ├── InvoicesController.cs
     │   └── ReportsController.cs
@@ -58,8 +56,8 @@ backend/
     │   ├── InvoiceService.cs
     │   └── CrystalReportService.cs
     └── Reports/
-        ├── InvoiceReport.rpt
-        └── InvoiceReportData.xsd
+        ├── InvoiceReportModel.cs
+        └── InvoiceReport.rpt
 ```
 
 `jquery-3.7.1.min.js` local file hisebe rakha hoyeche, tai internet charao frontend run korbe.
@@ -269,16 +267,16 @@ Report data contract hisebe use hobe; frontend JSON object receive korbe.
 Proposed file:
 
 ```text
-backend/EnterpriseInvoiceSystem/ReportModels/InvoiceReportDataModel.cs
+backend/EnterpriseInvoiceSystem/Reports/InvoiceReportModel.cs
 ```
 
 Implemented model-ti nested API DTO duplicate kore na. Eta `.rpt`-er exact flat
-`InvoiceRows` record represent kore:
+report-er ekta item row represent kore:
 
 ```csharp
-namespace EnterpriseInvoiceSystem.ReportModels
+namespace EnterpriseInvoiceSystem.Reports
 {
-    public class InvoiceReportDataModel
+    public class InvoiceReportModel
     {
         public int InvoiceId { get; set; }
         public string InvoiceNumber { get; set; }
@@ -312,29 +310,22 @@ using EnterpriseInvoiceSystem.DTOs;
 Implementation-e low-risk separation use kora hoyeche:
 
 - `InvoiceService` existing DTO return korbe
-- `InvoiceReportDataModel.FromInvoice` nested DTO-ke flat report row list-e convert korbe
-- `CrystalReportService.CreateInvoiceDataTable` flat model list receive korbe
+- `InvoiceReportModel.FromInvoice` nested DTO-ke flat report model list-e convert korbe
+- `CrystalReportService` model list directly `SetDataSource`-e bind korbe
 - `/data` endpoint-er existing nested JSON contract unchanged thakbe
 - Crystal binding-er exact 14-column contract alada ebong explicit thakbe
 
 ## 9. Data Binding Contract
 
-`InvoiceReportDataModel` theke `DataTable("InvoiceRows")` create hobe. Ei tin jaygay exact
-field name ebong type same thakte hobe:
-
-1. `InvoiceReportDataModel.cs`
-2. `InvoiceReportData.xsd`
-3. `CrystalReportService.CreateInvoiceDataTable`
-
-`.rpt` file-o same `InvoiceRows` field reference korbe.
+`InvoiceReportModel`-er property name/type ebong `.rpt`-e save kora field name/type same
+thakte hobe. XSD ba `DataTable` dorkar nei; model list directly bind hoy.
 
 Binding sequence:
 
 ```text
 Database entities
     -> InvoiceReportDto
-    -> InvoiceReportDataModel list (one row per item)
-    -> InvoiceRows DataTable
+    -> InvoiceReportModel list (one row per item)
     -> InvoiceReport.rpt
     -> PDF stream
     -> Browser tab/download
@@ -468,7 +459,7 @@ $('#invoiceTableBody').on('click', '.view-data-button', function () {
 
 ### Required
 
-1. `ReportModels/InvoiceReportDataModel.cs` add/refactor kora.
+1. `Reports/InvoiceReportModel.cs` add/refactor kora.
 2. Invoice service-er report mapping updated model-e convert kora.
 3. Crystal report service updated model bind kora.
 4. Frontend static file-gulo `.csproj`-e Content hisebe include kora.
@@ -531,9 +522,9 @@ Server-side search criteria:
 
 ### Phase 5: Dedicated C# Report Model
 
-- `InvoiceReportDataModel.cs` create/refactor
+- `InvoiceReportModel.cs` create/refactor
 - Service return/parameter type update
-- DataTable schema mapping verify
+- C# model property mapping verify
 - JSON contract unchanged ache ki na test
 
 ### Phase 6: Verification and Polish
@@ -581,7 +572,7 @@ Server-side search criteria:
 ### Crystal Binding
 
 - JSON report data correct
-- `InvoiceRows` table-er 14 field exact ache
+- `InvoiceReportModel`-er 14 property exact ache
 - Product item-gulo Details section-e show hoy
 - Header/footer value correct
 - Generated file-er signature `%PDF-`
@@ -597,8 +588,8 @@ Frontend complete bola jabe jokhon:
 4. User selected invoice-er exact report data UI-te dekhte parbe.
 5. User selected invoice-er Crystal PDF notun tab/download-e open korte parbe.
 6. Loading, empty, 404, 500 ebong network error state clear hobe.
-7. Dedicated `InvoiceReportDataModel.cs` Crystal binding contract hisebe use hobe.
-8. XSD, DataTable ebong RPT schema unchanged/correct thakbe.
+7. Dedicated `InvoiceReportModel.cs` Crystal binding contract hisebe use hobe.
+8. C# model ebong RPT field name/type correct thakbe.
 9. Desktop ebong mobile-e UI usable hobe.
 10. Backend build error/warning chara complete hobe.
 
@@ -612,7 +603,7 @@ Frontend complete bola jabe jokhon:
 - List API: `/api/invoices`
 - Preview API: `/api/reports/invoices/{id}/data`
 - PDF API: `/api/reports/invoices/{id}/pdf`
-- Report model file: `ReportModels/InvoiceReportDataModel.cs`
+- Report model file: `Reports/InvoiceReportModel.cs`
 - PDF opening: direct user click theke new browser tab
 - Security: safe text rendering, validated ID, generic error message
 
@@ -625,7 +616,7 @@ Notun file:
 - `Frontend/js/api-config.js`
 - `Frontend/js/invoice-report.js`
 - `Frontend/vendor/jquery-3.7.1.min.js`
-- `ReportModels/InvoiceReportDataModel.cs`
+- `Reports/InvoiceReportModel.cs`
 
 Existing file update:
 

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using EnterpriseInvoiceSystem.DTOs;
 
-namespace EnterpriseInvoiceSystem.ReportModels
+namespace EnterpriseInvoiceSystem.Reports
 {
     /// <summary>
-    /// Represents one flat InvoiceRows record consumed by InvoiceReport.rpt.
+    /// One object represents one product row shown in InvoiceReport.rpt.
+    /// The property names match the database fields already saved inside the report.
     /// </summary>
-    public class InvoiceReportDataModel
+    public class InvoiceReportModel
     {
         public int InvoiceId { get; set; }
         public string InvoiceNumber { get; set; }
@@ -26,17 +27,17 @@ namespace EnterpriseInvoiceSystem.ReportModels
         public decimal TotalAmount { get; set; }
 
         /// <summary>
-        /// Flattens a nested invoice DTO into one Crystal Reports record per item.
+        /// Converts one invoice with many items into a simple list for Crystal Reports.
         /// </summary>
-        public static List<InvoiceReportDataModel> FromInvoice(InvoiceReportDto invoice)
+        public static List<InvoiceReportModel> FromInvoice(InvoiceReportDto invoice)
         {
             if (invoice == null)
                 throw new ArgumentNullException(nameof(invoice));
 
-            var items = invoice.Items ?? new List<InvoiceReportItemDto>();
+            var invoiceItems = invoice.Items ?? new List<InvoiceReportItemDto>();
 
-            return items
-                .Select(item => new InvoiceReportDataModel
+            return invoiceItems
+                .Select(invoiceItem => new InvoiceReportModel
                 {
                     InvoiceId = invoice.InvoiceId,
                     InvoiceNumber = invoice.InvoiceNumber,
@@ -44,11 +45,11 @@ namespace EnterpriseInvoiceSystem.ReportModels
                     CustomerName = invoice.CustomerName,
                     CustomerPhone = invoice.CustomerPhone,
                     CustomerAddress = invoice.CustomerAddress ?? "",
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                    LineTotal = item.LineTotal,
+                    ProductId = invoiceItem.ProductId,
+                    ProductName = invoiceItem.ProductName,
+                    Quantity = invoiceItem.Quantity,
+                    UnitPrice = invoiceItem.UnitPrice,
+                    LineTotal = invoiceItem.LineTotal,
                     Subtotal = invoice.Subtotal,
                     DiscountAmount = invoice.DiscountAmount,
                     TotalAmount = invoice.TotalAmount,

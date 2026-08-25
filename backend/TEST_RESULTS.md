@@ -12,7 +12,7 @@ Only checks that were actually executed are marked **PASS**.
 | Single-project structure | PASS | One `.sln`, one `.csproj`, one `Web.config` under `backend`. |
 | Framework/platform | PASS | .NET Framework 4.8, Debug/Release x64, 64-bit IIS Express, Prefer 32-bit disabled. |
 | Crystal references | PASS | Official installed SAP `win64_x64` assemblies resolved at version `13.0.4000.0`. |
-| Report schema | PASS | `InvoiceReportData.xsd` parses and defines the `InvoiceRows` contract. |
+| Report model contract | PASS | `InvoiceReportModel` exposes the exact 14 properties used by the report; no XSD or `DataTable` is required. |
 | Forbidden architecture search | PASS | No second project/process/report service and no port 5090 dependency. |
 
 ## Database and seed
@@ -65,11 +65,11 @@ The API was hosted in one 64-bit IIS Express process at `http://localhost:51234`
 
 | Check | Result | Evidence |
 |---|---|---|
-| In-process Crystal service code | PASS | A per-request `ReportDocument` loads `~/Reports/InvoiceReport.rpt`, binds `InvoiceRows`, exports PDF, and disposes all streams/report state. |
+| In-process Crystal service code | PASS | A per-request `ReportDocument` loads `~/Reports/InvoiceReport.rpt`, directly binds a `List<InvoiceReportModel>`, exports PDF, and disposes all streams/report state. |
 | Missing-report behavior | PASS | Before adding the report, `/api/reports/invoices/1/pdf` returned controlled HTTP 500 JSON: `InvoiceReport.rpt was not found.` |
-| Genuine `InvoiceReport.rpt` | PASS | Crystal SDK inspection loaded the binary report, found table `InvoiceRows`, all 14 exact fields, and the required header/detail/footer objects. |
+| Genuine `InvoiceReport.rpt` | PASS | Crystal loaded the binary report and mapped all 14 model fields with the required header/detail/footer objects. |
 | Real PDF HTTP 200 | PASS | `/api/reports/invoices/1/pdf` returned HTTP 200 with attachment filename `Invoice_INV-2026-0001.pdf`. |
-| PDF content type, size, and signature | PASS | `application/pdf`; 41,137 bytes; first five bytes `%PDF-`. |
+| PDF content type, size, and signature | PASS | `application/pdf`; 41,134 bytes; first five bytes `%PDF-`. |
 | Report content inspection | PASS | `pdftotext -layout` confirmed INVOICE header, customer details, all three products, subtotal 90,500.00, discount 1,000.00, and grand total 89,500.00. |
 
 ## Fixes found by real testing

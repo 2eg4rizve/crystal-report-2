@@ -9,8 +9,7 @@ There is exactly one solution, one web project, one `.csproj`, one `Web.config`,
 ```text
 HTTP request -> Web API controller -> service -> EF6/SQL Server
                                               -> InvoiceReportDto
-                                              -> InvoiceReportDataModel rows
-                                              -> InvoiceRows DataTable
+                                              -> InvoiceReportModel rows
                                               -> InvoiceReport.rpt
                                               -> Crystal PDF bytes
 ```
@@ -104,24 +103,23 @@ Invoice prices always come from `Products`; client prices are ignored. `InvoiceS
 
 ## Learning Crystal Reports with this project
 
-`InvoiceService.GetReportAsync` loads Customer, Items, and Products with EF `Include` and maps them to `InvoiceReportDto`. `InvoiceReportDataModel.FromInvoice` converts that nested API DTO into one flat binding model per item, and `CrystalReportService.CreateInvoiceDataTable` turns those records into the `InvoiceRows` table. Invoice header and total fields repeat on each row. Crystal binds this predictable table to the `.rpt`, then exports it as PDF in the same web request.
+`InvoiceService.GetReportAsync` loads Customer, Items, and Products with EF `Include` and maps them to `InvoiceReportDto`. `InvoiceReportModel.FromInvoice` converts that nested DTO into one flat C# object per item. Invoice header and total fields repeat on every object. `CrystalReportService` passes the list directly to `ReportDocument.SetDataSource`, then exports the `.rpt` as PDF. No XSD or `DataTable` is used.
 
 ### Edit or recreate InvoiceReport.rpt
 
-The project includes a genuine, XSD-bound `InvoiceReport.rpt` that has generated a verified Crystal PDF. To learn, edit, or recreate it in the SAP designer:
+The project includes a genuine `InvoiceReport.rpt` that has generated a verified Crystal PDF. To edit or recreate it with the C# model:
 
 1. Open the project in Visual Studio with SAP Crystal Reports for Visual Studio installed.
 2. Right-click `Reports` -> **Add** -> **New Item** -> **Crystal Report**.
 3. Name it `InvoiceReport.rpt` and choose a blank report.
-4. Open **Database Expert** -> **Create New Connection** -> **ADO.NET (XML)**.
-5. Select `Reports/InvoiceReportData.xsd`, then add `InvoiceRows`.
-6. In Report Header place the INVOICE title, invoice number/date, and customer fields.
-7. In Page Header add Product, Quantity, Unit Price, and Line Total labels.
-8. In Details add `ProductName`, `Quantity`, `UnitPrice`, and `LineTotal`.
-9. In Report Footer add `Subtotal`, `DiscountAmount`, and `TotalAmount`.
-10. Format money fields to two decimal places.
-11. Set the file's **Build Action** to Content and **Copy to Output Directory** to Copy if newer.
-12. Save, rebuild x64, and call the PDF endpoint.
+4. Build the project once so Crystal Designer can discover the compiled class.
+5. Open **Database Expert** -> **Project Data** -> **.NET Objects**.
+6. Select `EnterpriseInvoiceSystem.Reports.InvoiceReportModel` and add it.
+7. In Report Header place the INVOICE title, invoice number/date, and customer fields.
+8. In Page Header add Product, Quantity, Unit Price, and Line Total labels.
+9. In Details add `ProductName`, `Quantity`, `UnitPrice`, and `LineTotal`.
+10. In Report Footer add `Subtotal`, `DiscountAmount`, and `TotalAmount`.
+11. Format money fields to two decimal places, save, rebuild x64, and call the PDF endpoint.
 
 Save the response and verify its first five bytes are `%PDF-`:
 
@@ -135,8 +133,8 @@ $bytes = [IO.File]::ReadAllBytes('.\test-output\Invoice_INV-2026-0001.pdf')
 - **BadImageFormatException:** IIS Express or the project is running x86. Select x64 and disable Prefer 32-bit.
 - **Could not load CrystalDecisions...:** install/repair SAP Crystal Reports for Visual Studio and SP40 x64 runtime; confirm assembly versions match.
 - **InvoiceReport.rpt was not found:** create the genuine report above and ensure Content/Copy if newer properties are set.
-- **Field/table binding error:** refresh the report database from `InvoiceReportData.xsd`; names and types must exactly match `InvoiceRows` in `CrystalReportService`.
+- **Field/table binding error:** use **Database -> Verify Database** or **Set Datasource Location**, choose the compiled `InvoiceReportModel`, and ensure its property names/types match the fields saved in the `.rpt`.
 - **SQL connection error:** verify `RIZVE\SQLEXPRESS`, Windows permissions, SQL Server service state, and the connection string.
 - **IIS Express access error:** stop stale IIS Express instances, delete the solution's `.vs` folder if safe, and reopen Visual Studio normally.
 
-The report JSON endpoint is the best debugging tool: if its data is correct but PDF fails, investigate the XSD, `.rpt`, or Crystal runtime rather than EF calculations.
+The report JSON endpoint is the best debugging tool: if its data is correct but PDF fails, investigate `InvoiceReportModel`, the `.rpt`, or the Crystal runtime rather than EF calculations.
