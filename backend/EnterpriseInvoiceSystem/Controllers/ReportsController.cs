@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using EnterpriseInvoiceSystem.Services;
+using EnterpriseInvoiceSystem.DTOs;
 
 namespace EnterpriseInvoiceSystem.Controllers
 {
@@ -19,6 +20,17 @@ namespace EnterpriseInvoiceSystem.Controllers
 
         // Converts invoice data into a Crystal Reports PDF document.
         readonly CrystalReportService crystalReportService = new CrystalReportService();
+        readonly ProductService productService = new ProductService();
+
+        [HttpGet, Route("~/api/reports/products/pdf")]
+        public async Task<HttpResponseMessage> ProductPdf([FromUri] ProductFilterRequest request)
+        {
+            var products = await productService.FilterAsync(request ?? new ProductFilterRequest());
+            var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(crystalReportService.GenerateProductPdf(products)) };
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "Products.pdf" };
+            return response;
+        }
 
         // Returns the report-ready invoice data so clients can inspect or render it themselves.
         [HttpGet, Route("{id:int}/data")]

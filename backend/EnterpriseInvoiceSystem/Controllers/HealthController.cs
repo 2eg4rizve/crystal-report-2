@@ -1,5 +1,7 @@
 using System;
+using System.Net;
 using System.Web.Http;
+using EnterpriseInvoiceSystem.Data;
 
 namespace EnterpriseInvoiceSystem.Controllers
 {
@@ -9,14 +11,19 @@ namespace EnterpriseInvoiceSystem.Controllers
         [HttpGet, Route("")]
         public IHttpActionResult Get()
         {
-            return Ok(
-                new
+            try
+            {
+                using (var db = new EnterpriseDbContext())
                 {
-                    status = "Healthy",
-                    application = "Enterprise Invoice System",
-                    utcTime = DateTime.UtcNow,
+                    if (!db.Database.Exists())
+                        return Content(HttpStatusCode.ServiceUnavailable, new { status = "Database unavailable", application = "Enterprise Invoice System", utcTime = DateTime.UtcNow });
                 }
-            );
+                return Ok(new { status = "Healthy", application = "Enterprise Invoice System", utcTime = DateTime.UtcNow });
+            }
+            catch (Exception)
+            {
+                return Content(HttpStatusCode.ServiceUnavailable, new { status = "Database unavailable", application = "Enterprise Invoice System", utcTime = DateTime.UtcNow });
+            }
         }
     }
 }

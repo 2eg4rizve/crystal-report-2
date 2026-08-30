@@ -10,6 +10,19 @@ namespace EnterpriseInvoiceSystem.Controllers
     {
         readonly ProductService service = new ProductService();
 
+        [HttpGet, Route("filter")]
+        public async Task<IHttpActionResult> Filter([FromUri] ProductFilterRequest request)
+        {
+            request = request ?? new ProductFilterRequest();
+            if (request.Id.HasValue && request.Id.Value <= 0)
+                return BadRequest("Id must be greater than zero.");
+            if (request.MinUnitPrice < 0 || request.MaxUnitPrice < 0)
+                return BadRequest("Unit price filters cannot be negative.");
+            if (request.MinUnitPrice > request.MaxUnitPrice)
+                return BadRequest("MinUnitPrice cannot be greater than MaxUnitPrice.");
+            return Ok(await service.FilterAsync(request));
+        }
+
         [HttpGet, Route("")]
         public async Task<IHttpActionResult> All()
         {

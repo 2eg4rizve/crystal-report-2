@@ -117,13 +117,18 @@
         })
             .done(function () {
                 setApiStatus(true);
+                loadInvoices();
             })
-            .fail(function () {
-                setApiStatus(false);
+            .fail(function (xhr) {
+                var statusText = xhr.responseJSON && xhr.responseJSON.status
+                    ? xhr.responseJSON.status
+                    : "API unavailable";
+                setApiStatus(false, statusText);
+                showMessage("error", statusText + ". Start SQL Server Express and reload the page.");
             });
     }
 
-    function setApiStatus(isConnected) {
+    function setApiStatus(isConnected, unavailableText) {
         // parameter isConnected একটি boolean: true হলে connected, false হলে unavailable।
         // removeClass পুরনো visual state সরায়, addClass নতুন state বসায়।
         // ternary operator (condition ? trueValue : falseValue) দিয়ে text বাছাই হয়।
@@ -132,7 +137,9 @@
         $status
             .removeClass("status-checking status-connected status-disconnected")
             .addClass(isConnected ? "status-connected" : "status-disconnected");
-        $status.find(".status-text").text(isConnected ? "API connected" : "API unavailable");
+        $status.find(".status-text").text(
+            isConnected ? "API connected" : unavailableText || "API unavailable"
+        );
     }
 
     function loadInvoices() {

@@ -5,12 +5,37 @@ using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
 using EnterpriseInvoiceSystem.DTOs;
 using EnterpriseInvoiceSystem.Reports;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EnterpriseInvoiceSystem.Services
 {
     // Binds beginner-friendly C# report rows and exports the Crystal Report as a PDF.
     public class CrystalReportService
     {
+        public byte[] GenerateProductPdf(IList<ProductResponse> products)
+        {
+            var path = HostingEnvironment.MapPath("~/Reports/ProductReport.rpt");
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) throw new FileNotFoundException("ProductReport.rpt was not found.", path);
+            using (var report = new ReportDocument())
+            {
+                var rows = products.Select(x => new InvoiceReportModel
+                {
+                    ProductId = x.Id,
+                    ProductName = x.Name,
+                    UnitPrice = x.UnitPrice,
+                    Quantity = 1,
+                    LineTotal = x.UnitPrice,
+                    InvoiceNumber = "Product catalogue",
+                    InvoiceDate = x.CreatedAtUtc,
+                    Subtotal = products.Sum(p => p.UnitPrice),
+                    TotalAmount = products.Sum(p => p.UnitPrice)
+                }).ToList();
+                report.Load(path); report.SetDataSource(rows);
+                using (var stream = report.ExportToStream(ExportFormatType.PortableDocFormat))
+                using (var buffer = new MemoryStream()) { stream.CopyTo(buffer); return buffer.ToArray(); }
+            }
+        }
         /// <summary>
         /// Loads the invoice report template, binds one invoice to it, and exports a PDF.
         /// </summary>

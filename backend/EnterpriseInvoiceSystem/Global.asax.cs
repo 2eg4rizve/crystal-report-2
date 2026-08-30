@@ -18,7 +18,7 @@ namespace EnterpriseInvoiceSystem
         {
             if (Request.AppRelativeCurrentExecutionFilePath == "~/")
             {
-                Response.Redirect("~/Frontend/index.html", false);
+                Response.Redirect("~/Frontend/dashboard.html", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
         }

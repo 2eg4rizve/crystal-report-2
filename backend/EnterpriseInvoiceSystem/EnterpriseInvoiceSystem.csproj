@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
@@ -126,11 +128,27 @@
     <Content Include="Web.config" />
     <Content Include="packages.config" />
     <Content Include="Frontend\index.html" />
+    <Content Include="Frontend\dashboard.html" />
+    <Content Include="Frontend\customers.html" />
+    <Content Include="Frontend\products.html" />
+    <Content Include="Frontend\invoice-create.html" />
+    <Content Include="Frontend\health.html" />
+    <Content Include="Frontend\css\app-nav.css" />
+    <Content Include="Frontend\css\admin.css" />
     <Content Include="Frontend\css\invoice-report.css" />
     <Content Include="Frontend\js\api-config.js" />
     <Content Include="Frontend\js\invoice-report.js" />
+    <Content Include="Frontend\product-report.html" />
+    <Content Include="Frontend\css\product-report.css" />
+    <Content Include="Frontend\js\product-report.js" />
+    <Content Include="Frontend\js\app-nav.js" />
+    <Content Include="Frontend\js\entity-page.js" />
+    <Content Include="Frontend\js\invoice-create.js" />
     <Content Include="Frontend\vendor\jquery-3.7.1.min.js" />
     <Content Include="Reports\InvoiceReport.rpt" Condition="Exists('Reports\InvoiceReport.rpt')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\ProductReport.rpt" Condition="Exists('Reports\ProductReport.rpt')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

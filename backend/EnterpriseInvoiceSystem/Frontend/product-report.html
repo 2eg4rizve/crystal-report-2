@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Product Report</title>
+    <link rel="stylesheet" href="css/app-nav.css">
+    <link rel="stylesheet" href="css/product-report.css">
+</head>
+<body>
+    <main>
+        <h1>Product report</h1>
+        <p>All filters are optional.</p>
+        <form id="filterForm">
+            <input id="id" type="number" placeholder="Product ID">
+            <input id="name" placeholder="Product name">
+            <input id="min" type="number" step="0.01" placeholder="Minimum unit price">
+            <input id="max" type="number" step="0.01" placeholder="Maximum unit price">
+            <button>Search products</button>
+            <button id="pdf" type="button">Download Crystal Report</button>
+        </form>
+        <p id="message"></p>
+        <table><thead><tr><th>ID</th><th>Name</th><th>Unit price</th><th>Created</th></tr></thead><tbody id="rows"></tbody></table>
+    </main>
+    <script src="js/app-nav.js"></script>
+    <script src="js/product-report.js"></script>
+</body>
+</html>

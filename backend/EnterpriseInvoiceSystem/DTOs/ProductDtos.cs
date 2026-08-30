@@ -26,4 +26,12 @@ namespace EnterpriseInvoiceSystem.DTOs
         public decimal UnitPrice { get; set; }
         public DateTime CreatedAtUtc { get; set; }
     }
+
+    public class ProductFilterRequest
+    {
+        public int? Id { get; set; }
+        public string Name { get; set; }
+        public decimal? MinUnitPrice { get; set; }
+        public decimal? MaxUnitPrice { get; set; }
+    }
 }
