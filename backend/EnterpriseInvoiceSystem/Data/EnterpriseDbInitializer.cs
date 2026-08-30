@@ -18,6 +18,16 @@ namespace EnterpriseInvoiceSystem.Data
             EnsureProduct(db, "Business Laptop", 85000m, now);
             EnsureProduct(db, "Wireless Mouse", 1500m, now);
             EnsureProduct(db, "Office Keyboard", 2500m, now);
+            // Extra products make the sample invoice large enough to exercise Crystal's paging.
+            for (var productNumber = 1; productNumber <= 40; productNumber++)
+            {
+                EnsureProduct(
+                    db,
+                    "Sample Product " + productNumber.ToString("00"),
+                    100m + productNumber,
+                    now
+                );
+            }
             db.SaveChanges();
             if (!db.Invoices.Any(x => x.InvoiceNumber == "INV-2026-0001"))
             {
@@ -64,6 +74,42 @@ namespace EnterpriseInvoiceSystem.Data
                 db.Invoices.Add(invoice);
                 db.SaveChanges();
             }
+
+            AddPagingSampleItems(db);
+        }
+
+        static void AddPagingSampleItems(EnterpriseDbContext db)
+        {
+            var invoice = db.Invoices
+                .Include(x => x.Items)
+                .SingleOrDefault(x => x.InvoiceNumber == "INV-2026-0001");
+            if (invoice == null)
+                return;
+
+            var sampleProducts = db.Products
+                .Where(x => x.Name.StartsWith("Sample Product "))
+                .OrderBy(x => x.Name)
+                .ToList();
+            var existingProductIds = invoice.Items.Select(x => x.ProductId).ToList();
+
+            foreach (var product in sampleProducts)
+            {
+                if (existingProductIds.Contains(product.Id))
+                    continue;
+
+                invoice.Items.Add(
+                    new InvoiceItem
+                    {
+                        ProductId = product.Id,
+                        Quantity = 1,
+                        UnitPrice = product.UnitPrice,
+                        LineTotal = product.UnitPrice,
+                    }
+                );
+            }
+
+            invoice.TotalAmount = invoice.Items.Sum(x => x.LineTotal) - invoice.DiscountAmount;
+            db.SaveChanges();
         }
 
         static void EnsureCustomer(
